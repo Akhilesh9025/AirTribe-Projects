@@ -37,7 +37,7 @@ This system will help librarians manage books, patrons, and lending processes ef
 9. Test the system with multiple scenarios using the below class diagram
 
 ### Class Diagram
-![Library Management System Class Diagram](https://github.com/Akhilesh9025/AirTribe-Projects/blob/main/ClassDiagram_LibraryManagementSystem.png)
+![Library Management System Class Diagram](https://github.com/Akhilesh9025/AirTribe-Projects/blob/main/LibraryManagementSystem/ClassDiagram_LibraryManagementSystem.png)
 
 
 
