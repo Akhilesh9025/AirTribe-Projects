@@ -1,0 +1,183 @@
+@baseUrl = {{baseUrl}}
+@jwt_token = ""
+
+###
+# Test 1: Register a New User
+# Expected: 200 OK (or 201 Created), User registered successfully
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123",
+  "email": "test@example.com",
+  "firstName": "Test",
+  "lastName": "User"
+}
+
+###
+# Test 2: Attempt to Register an Existing User (should fail)
+# Expected: 400 Bad Request (Username or email already taken)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "anotherpassword",
+  "email": "another@example.com",
+  "firstName": "Another",
+  "lastName": "User"
+}
+
+###
+# Test 3: Login User and Capture JWT Token
+# Expected: 200 OK, returns JWT token
+POST {{baseUrl}}/api/auth/signin
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+> {%
+    client.global.set("jwt_token", response.body.accessToken);
+%}
+
+###
+# Test 4: Get All Users (Admin Only - Requires specific role if implemented, otherwise for any authenticated user)
+# Expected: 200 OK, list of users
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 5: Create a New Team
+# Expected: 201 Created, Team details
+POST {{baseUrl}}/api/teams
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "name": "Development Team",
+  "description": "Team for developing the task manager application."
+}
+
+###
+# Test 6: Get All Teams
+# Expected: 200 OK, list of teams
+GET {{baseUrl}}/api/teams
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 7: Create a New Project
+# Expected: 201 Created, Project details
+POST {{baseUrl}}/api/projects
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "name": "Task Manager Backend",
+  "description": "Developing the robust backend for the task management system.",
+  "teamId": 1  # Assuming 'Development Team' created above has ID 1. Adjust if needed.
+}
+
+###
+# Test 8: Get All Projects
+# Expected: 200 OK, list of projects
+GET {{baseUrl}}/api/projects
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 9: Create a New Task
+# Expected: 201 Created, Task details
+POST {{baseUrl}}/api/tasks
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "title": "Implement User Authentication",
+  "description": "Set up Spring Security, JWT generation, and validation.",
+  "dueDate": "2025-08-15T10:00:00",
+  "priority": "HIGH",
+  "status": "TODO",
+  "projectId": 1, # Assuming 'Task Manager Backend' has ID 1. Adjust if needed.
+  "assignedToUserId": 1
+}
+
+###
+# Test 10: Get All Tasks
+# Expected: 200 OK, list of tasks
+GET {{baseUrl}}/api/tasks
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 11: Get Task by ID
+# Expected: 200 OK, specific task details
+GET {{baseUrl}}/api/tasks/1
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 12: Update Task
+# Expected: 200 OK, updated task details
+PUT {{baseUrl}}/api/tasks/1
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "title": "Implement User Authentication (In Progress)",
+  "description": "Set up Spring Security, JWT generation, and validation.",
+  "dueDate": "2025-08-15T10:00:00",
+  "priority": "HIGH",
+  "status": "IN_PROGRESS",
+  "projectId": 1,
+  "assignedToUserId": 1
+}
+
+###
+# Test 13: Delete Task
+# Expected: 204 No Content
+DELETE {{baseUrl}}/api/tasks/1
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 14: Get All Tasks (after deletion, should not include task 1)
+# Expected: 200 OK, possibly empty list or list without deleted task
+GET {{baseUrl}}/api/tasks
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 15: Add Project Member
+# Expected: 200 OK (or specific success response)
+# Replace with actual user ID and project ID if they differ
+POST {{baseUrl}}/api/projects/1/members/1
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+###
+# Test 16: Add Team Member
+# Expected: 200 OK (or specific success response)
+# Replace with actual user ID and team ID if they differ
+POST {{baseUrl}}/api/teams/1/members/1
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+###
+# Test 18: Add a comment to a task
+# Expected: 201 Created
+POST {{baseUrl}}/api/comments
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "content": "This is a test comment on the task.",
+  "taskId": 1, # Assuming task ID 1 exists
+  "authorId": 1 # Assuming user ID 1 exists
+}
+
+###
+# Test 19: Get Comments for a Task
+# Expected: 200 OK, list of comments
+GET {{baseUrl}}/api/tasks/1/comments
+Authorization: Bearer {{jwt_token}}
